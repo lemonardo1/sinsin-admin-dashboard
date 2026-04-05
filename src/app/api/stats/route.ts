@@ -11,6 +11,7 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const days = parseInt(url.searchParams.get("days") || "30", 10);
 
+  try {
   const [
     dailySignups,
     totalUsers,
@@ -139,4 +140,11 @@ export async function GET(request: Request) {
     dailyWeightRecords,
     communityPostStats,
   });
+  } catch (e) {
+    console.error("Stats API error:", e);
+    return Response.json(
+      { error: e instanceof Error ? e.message : "Internal server error" },
+      { status: 500 }
+    );
+  }
 }

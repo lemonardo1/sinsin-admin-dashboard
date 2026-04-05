@@ -3,9 +3,10 @@ import { Pool } from "pg";
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   max: 5,
-  ssl: process.env.DATABASE_URL?.includes("cloud")
+  ssl: process.env.NODE_ENV === "production"
     ? { rejectUnauthorized: false }
     : undefined,
+  connectionTimeoutMillis: 10000,
 });
 
 export async function query<T = Record<string, unknown>>(
