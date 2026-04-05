@@ -28,6 +28,12 @@ interface Stats {
   }[];
   dailyWeightRecords: { date: string; count: number }[];
   communityPostStats: { date: string; count: number }[];
+  recentSignupUsers: {
+    email: string;
+    nick_name: string;
+    role: string;
+    signup_date: string;
+  }[];
 }
 
 export default function Dashboard({ onLogout }: { onLogout: () => void }) {
@@ -222,6 +228,61 @@ export default function Dashboard({ onLogout }: { onLogout: () => void }) {
             type="bar"
           />
           <CKDPieChart data={stats.ckdDistribution} />
+        </div>
+
+        {/* Recent Signups Table */}
+        <div className="bg-white rounded-xl border border-gray-200 p-5">
+          <h3 className="text-sm font-semibold text-gray-700 mb-4">
+            신규 가입 유저 ({days}일)
+          </h3>
+          {stats.recentSignupUsers.length === 0 ? (
+            <p className="text-gray-400 text-sm">
+              최근 {days}일 내 신규 가입자가 없습니다.
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-gray-500 border-b">
+                    <th className="pb-2 font-medium">#</th>
+                    <th className="pb-2 font-medium">이메일</th>
+                    <th className="pb-2 font-medium">닉네임</th>
+                    <th className="pb-2 font-medium">역할</th>
+                    <th className="pb-2 font-medium">가입일</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {stats.recentSignupUsers.map((user, i) => (
+                    <tr key={i} className="border-b border-gray-50">
+                      <td className="py-2 text-gray-400">{i + 1}</td>
+                      <td className="py-2 text-gray-800 font-medium">
+                        {user.email}
+                      </td>
+                      <td className="py-2 text-gray-600">
+                        {user.nick_name || "-"}
+                      </td>
+                      <td className="py-2">
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                            user.role === "DOCTOR"
+                              ? "bg-blue-100 text-blue-700"
+                              : user.role === "admin"
+                                ? "bg-red-100 text-red-700"
+                                : "bg-gray-100 text-gray-700"
+                          }`}
+                        >
+                          {user.role}
+                        </span>
+                      </td>
+                      <td className="py-2 text-gray-500">
+                        {new Date(user.signup_date).toLocaleDateString("ko-KR")}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
 
         {/* Tables */}

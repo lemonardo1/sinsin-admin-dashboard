@@ -23,6 +23,7 @@ export async function GET(request: Request) {
     recentWithdrawals,
     dailyWeightRecords,
     communityPostStats,
+    recentSignupUsers,
   ] = await Promise.all([
     // 날짜별 가입자수
     query(
@@ -126,6 +127,15 @@ export async function GET(request: Request) {
        ORDER BY date`,
       [days]
     ),
+
+    // 신규 가입 유저 목록
+    query(
+      `SELECT email, nick_name, role, DATE(created_at) as signup_date
+       FROM users
+       WHERE created_at >= NOW() - INTERVAL '1 day' * $1
+       ORDER BY created_at DESC`,
+      [days]
+    ),
   ]);
 
   return Response.json({
@@ -139,6 +149,7 @@ export async function GET(request: Request) {
     recentWithdrawals,
     dailyWeightRecords,
     communityPostStats,
+    recentSignupUsers,
   });
   } catch (e) {
     console.error("Stats API error:", e);
