@@ -66,7 +66,7 @@ export async function GET(request: Request) {
     // 날짜별 채팅 메시지 수
     query(
       `SELECT DATE(created_at) as date, COUNT(*) as count
-       FROM messages
+       FROM message
        WHERE created_at >= NOW() - INTERVAL '1 day' * $1
          AND role = 'user'
        GROUP BY DATE(created_at)
@@ -79,7 +79,7 @@ export async function GET(request: Request) {
       `SELECT
          COALESCE(ckd_stage::text, 'N/A') as stage,
          COUNT(*) as count
-       FROM user_profiles
+       FROM user_profile
        GROUP BY ckd_stage
        ORDER BY ckd_stage NULLS LAST`
     ),
@@ -99,7 +99,7 @@ export async function GET(request: Request) {
     query(
       `SELECT DATE(uw.created_at) as date, COUNT(*) as count,
               ARRAY_AGG(uw.reason) as reasons
-       FROM user_withdrawals uw
+       FROM user_withdrawal uw
        WHERE uw.created_at >= NOW() - INTERVAL '1 day' * $1
        GROUP BY DATE(uw.created_at)
        ORDER BY date DESC`,
@@ -109,7 +109,7 @@ export async function GET(request: Request) {
     // 날짜별 체중 기록 수
     query(
       `SELECT DATE(updated_at) as date, COUNT(*) as count
-       FROM weight_records
+       FROM weight_record
        WHERE updated_at >= NOW() - INTERVAL '1 day' * $1
        GROUP BY DATE(updated_at)
        ORDER BY date`,
@@ -119,7 +119,7 @@ export async function GET(request: Request) {
     // 커뮤니티 게시글 통계
     query(
       `SELECT DATE(created_at) as date, COUNT(*) as count
-       FROM community_posts
+       FROM community_post
        WHERE created_at >= NOW() - INTERVAL '1 day' * $1
          AND is_deleted = false
        GROUP BY DATE(created_at)
