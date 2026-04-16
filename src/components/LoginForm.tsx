@@ -12,18 +12,25 @@ export default function LoginForm({ onSuccess }: { onSuccess: () => void }) {
     setLoading(true);
     setError("");
 
-    const res = await fetch("/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password }),
-    });
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
 
-    if (res.ok) {
-      onSuccess();
-    } else {
-      setError("비밀번호가 올바르지 않습니다.");
+      if (res.ok) {
+        onSuccess();
+      } else {
+        setError("비밀번호가 올바르지 않습니다.");
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "네트워크 오류가 발생했습니다."
+      );
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   return (
