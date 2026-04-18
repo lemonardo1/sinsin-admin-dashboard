@@ -9,7 +9,7 @@ export async function GET(request: Request) {
   }
 
   const url = new URL(request.url);
-  const days = parseInt(url.searchParams.get("days") || "30", 10);
+  const days = Math.max(1, Math.min(parseInt(url.searchParams.get("days") || "30", 10) || 30, 90));
 
   try {
   const [

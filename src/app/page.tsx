@@ -8,7 +8,7 @@ export default function Home() {
   const [authed, setAuthed] = useState<boolean | null>(null);
 
   useEffect(() => {
-    fetch("/api/stats?days=1")
+    fetch("/api/auth")
       .then((res) => setAuthed(res.ok))
       .catch(() => setAuthed(false));
   }, []);

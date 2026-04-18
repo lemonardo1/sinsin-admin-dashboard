@@ -1,16 +1,18 @@
 import { cookies } from "next/headers";
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "changeme";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+if (!ADMIN_PASSWORD) throw new Error("ADMIN_PASSWORD env var is not set");
+const _password: string = ADMIN_PASSWORD;
 const COOKIE_NAME = "sinsin-admin-auth";
 
 export async function isAuthenticated(): Promise<boolean> {
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME);
-  return token?.value === ADMIN_PASSWORD;
+  return token?.value === _password;
 }
 
 export function getAdminPassword(): string {
-  return ADMIN_PASSWORD;
+  return _password;
 }
 
 export const COOKIE_CONFIG = {
