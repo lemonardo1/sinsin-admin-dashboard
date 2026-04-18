@@ -34,6 +34,16 @@ interface Stats {
     role: string;
     signup_date: string;
   }[];
+  recentErrors: {
+    source: string;
+    status_code: number | null;
+    method: string | null;
+    path: string | null;
+    error_code: string | null;
+    message: string | null;
+    user_id: number | null;
+    created_at: string;
+  }[];
 }
 
 export default function Dashboard({ onLogout }: { onLogout: () => void }) {
@@ -357,6 +367,84 @@ export default function Dashboard({ onLogout }: { onLogout: () => void }) {
               </table>
             )}
           </div>
+        </div>
+        {/* Error Log */}
+        <div className="bg-white rounded-xl border border-gray-200 p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-semibold text-gray-700">
+              에러 로그 ({days}일, 최근 100건)
+            </h3>
+            <span className="text-xs text-gray-400">
+              서버 4xx/5xx · 클라이언트 API 실패
+            </span>
+          </div>
+          {stats.recentErrors.length === 0 ? (
+            <p className="text-gray-400 text-sm">기간 내 에러 기록이 없습니다.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="text-left text-gray-500 border-b">
+                    <th className="pb-2 font-medium">소스</th>
+                    <th className="pb-2 font-medium">상태</th>
+                    <th className="pb-2 font-medium">메서드</th>
+                    <th className="pb-2 font-medium">경로</th>
+                    <th className="pb-2 font-medium">코드</th>
+                    <th className="pb-2 font-medium">메시지</th>
+                    <th className="pb-2 font-medium">시간</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {stats.recentErrors.map((err, i) => (
+                    <tr key={i} className="border-b border-gray-50 hover:bg-gray-50">
+                      <td className="py-1.5">
+                        <span
+                          className={`px-1.5 py-0.5 rounded text-xs font-medium ${
+                            err.source === "server"
+                              ? "bg-red-100 text-red-700"
+                              : "bg-amber-100 text-amber-700"
+                          }`}
+                        >
+                          {err.source}
+                        </span>
+                      </td>
+                      <td className="py-1.5 font-mono">
+                        <span
+                          className={
+                            (err.status_code ?? 0) >= 500
+                              ? "text-red-600 font-semibold"
+                              : "text-amber-600"
+                          }
+                        >
+                          {err.status_code ?? "-"}
+                        </span>
+                      </td>
+                      <td className="py-1.5 text-gray-500 font-mono">
+                        {err.method ?? "-"}
+                      </td>
+                      <td className="py-1.5 text-gray-700 max-w-[200px] truncate font-mono">
+                        {err.path ?? "-"}
+                      </td>
+                      <td className="py-1.5 text-gray-500 font-mono">
+                        {err.error_code ?? "-"}
+                      </td>
+                      <td className="py-1.5 text-gray-600 max-w-[240px] truncate">
+                        {err.message ?? "-"}
+                      </td>
+                      <td className="py-1.5 text-gray-400 whitespace-nowrap">
+                        {new Date(err.created_at).toLocaleString("ko-KR", {
+                          month: "2-digit",
+                          day: "2-digit",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </main>
     </div>
