@@ -53,6 +53,8 @@ interface Stats {
     error_code: string | null;
     message: string | null;
     user_id: number | null;
+    user_email: string | null;
+    user_nick_name: string | null;
     created_at: string;
   }[];
 }
@@ -483,6 +485,7 @@ export default function Dashboard({ onLogout }: { onLogout: () => void }) {
                     <th className="pb-2 font-medium">경로</th>
                     <th className="pb-2 font-medium">코드</th>
                     <th className="pb-2 font-medium">메시지</th>
+                    <th className="pb-2 font-medium">계정</th>
                     <th className="pb-2 font-medium">시간</th>
                   </tr>
                 </thead>
@@ -522,6 +525,17 @@ export default function Dashboard({ onLogout }: { onLogout: () => void }) {
                       </td>
                       <td className="py-1.5 text-gray-600 max-w-[240px] truncate">
                         {err.message ?? "-"}
+                      </td>
+                      <td className="py-1.5 whitespace-nowrap">
+                        {err.user_email ? (
+                          <span className="text-blue-600 font-medium" title={`ID: ${err.user_id}`}>
+                            {err.user_nick_name ? `${err.user_nick_name}` : err.user_email}
+                          </span>
+                        ) : err.user_id ? (
+                          <span className="text-gray-400 font-mono">#{err.user_id}</span>
+                        ) : (
+                          <span className="text-gray-300">-</span>
+                        )}
                       </td>
                       <td className="py-1.5 text-gray-400 whitespace-nowrap">
                         {new Date(err.created_at).toLocaleString("ko-KR", {

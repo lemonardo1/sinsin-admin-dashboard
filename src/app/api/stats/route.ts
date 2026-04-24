@@ -140,11 +140,13 @@ export async function GET(request: Request) {
 
     // 최근 에러 로그 (최대 100건)
     query(
-      `SELECT source, status_code, method, path, error_code, message, user_id,
-              created_at
-       FROM error_log
-       WHERE created_at >= NOW() - INTERVAL '1 day' * $1
-       ORDER BY created_at DESC
+      `SELECT el.source, el.status_code, el.method, el.path, el.error_code,
+              el.message, el.user_id, el.created_at,
+              u.email as user_email, u.nick_name as user_nick_name
+       FROM error_log el
+       LEFT JOIN users u ON u.id = el.user_id
+       WHERE el.created_at >= NOW() - INTERVAL '1 day' * $1
+       ORDER BY el.created_at DESC
        LIMIT 100`,
       [days]
     ),
