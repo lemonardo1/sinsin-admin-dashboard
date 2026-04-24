@@ -4,6 +4,17 @@ import { useEffect, useState, useCallback } from "react";
 import StatCard from "./StatCard";
 import { TimeSeriesChart, CKDPieChart } from "./ChartCard";
 
+interface Inquiry {
+  id: number;
+  inquiry_type: string | null;
+  name: string;
+  contact: string;
+  message: string;
+  partnership: string[] | null;
+  contact_time: string[] | null;
+  created_at: string;
+}
+
 interface Stats {
   dailySignups: { date: string; count: number }[];
   totalUsers: {
@@ -51,19 +62,27 @@ export default function Dashboard({ onLogout }: { onLogout: () => void }) {
   const [days, setDays] = useState(30);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [inquiries, setInquiries] = useState<Inquiry[]>([]);
 
   const fetchStats = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(`/api/stats?days=${days}`);
-      if (res.status === 401) {
+      const [statsRes, inquiriesRes] = await Promise.all([
+        fetch(`/api/stats?days=${days}`),
+        fetch("/api/inquiries"),
+      ]);
+      if (statsRes.status === 401 || inquiriesRes.status === 401) {
         onLogout();
         return;
       }
-      if (!res.ok) throw new Error("Failed to fetch stats");
-      const data = await res.json();
+      if (!statsRes.ok) throw new Error("Failed to fetch stats");
+      const data = await statsRes.json();
       setStats(data);
+      if (inquiriesRes.ok) {
+        const inqData = await inquiriesRes.json();
+        setInquiries(inqData.inquiries ?? []);
+      }
     } catch (e) {
       setError(
         e instanceof Error ? e.message : "데이터를 불러오는 데 실패했습니다."
@@ -368,6 +387,79 @@ export default function Dashboard({ onLogout }: { onLogout: () => void }) {
             )}
           </div>
         </div>
+        {/* Inquiries */}
+        <div className="bg-white rounded-xl border border-gray-200 p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-semibold text-gray-700">
+              프로모 웹 문의 목록 (최근 200건)
+            </h3>
+            <span className="text-xs text-gray-400">총 {inquiries.length}건</span>
+          </div>
+          {inquiries.length === 0 ? (
+            <p className="text-gray-400 text-sm">접수된 문의가 없습니다.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="text-left text-gray-500 border-b">
+                    <th className="pb-2 font-medium">#</th>
+                    <th className="pb-2 font-medium">문의 유형</th>
+                    <th className="pb-2 font-medium">제휴분야</th>
+                    <th className="pb-2 font-medium">연락 시간</th>
+                    <th className="pb-2 font-medium">이름/소속</th>
+                    <th className="pb-2 font-medium">연락처</th>
+                    <th className="pb-2 font-medium">내용</th>
+                    <th className="pb-2 font-medium">접수일시</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {inquiries.map((inq) => (
+                    <tr key={inq.id} className="border-b border-gray-50 hover:bg-gray-50">
+                      <td className="py-1.5 text-gray-400">{inq.id}</td>
+                      <td className="py-1.5">
+                        {inq.inquiry_type ? (
+                          <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${
+                            inq.inquiry_type === "제휴문의"
+                              ? "bg-green-100 text-green-700"
+                              : inq.inquiry_type === "계정 삭제 요청"
+                                ? "bg-red-100 text-red-700"
+                                : inq.inquiry_type === "개인정보 삭제 요청"
+                                  ? "bg-orange-100 text-orange-700"
+                                  : "bg-gray-100 text-gray-700"
+                          }`}>
+                            {inq.inquiry_type}
+                          </span>
+                        ) : (
+                          <span className="px-1.5 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700">제휴문의</span>
+                        )}
+                      </td>
+                      <td className="py-1.5 text-gray-600">
+                        {inq.partnership?.join(", ") || "-"}
+                      </td>
+                      <td className="py-1.5 text-gray-600">
+                        {inq.contact_time?.join(", ") || "-"}
+                      </td>
+                      <td className="py-1.5 text-gray-800 font-medium">{inq.name}</td>
+                      <td className="py-1.5 text-gray-600 font-mono">{inq.contact}</td>
+                      <td className="py-1.5 text-gray-600 max-w-[240px] truncate" title={inq.message}>
+                        {inq.message}
+                      </td>
+                      <td className="py-1.5 text-gray-400 whitespace-nowrap">
+                        {new Date(inq.created_at).toLocaleString("ko-KR", {
+                          month: "2-digit",
+                          day: "2-digit",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
         {/* Error Log */}
         <div className="bg-white rounded-xl border border-gray-200 p-5">
           <div className="flex items-center justify-between mb-4">
