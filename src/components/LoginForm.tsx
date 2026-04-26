@@ -34,10 +34,10 @@ export default function LoginForm({ onSuccess }: { onSuccess: () => void }) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-xl shadow-lg w-full max-w-sm"
+        className="bg-white p-6 sm:p-8 rounded-xl shadow-lg w-full max-w-sm"
       >
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
           신신당부 관리자

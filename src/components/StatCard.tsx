@@ -22,14 +22,14 @@ export default function StatCard({
 
   return (
     <div
-      className={`rounded-xl border p-5 ${colorClasses[color] || colorClasses.blue}`}
+      className={`rounded-xl border p-3 sm:p-5 ${colorClasses[color] || colorClasses.blue}`}
     >
-      <p className="text-sm font-medium opacity-80">{title}</p>
-      <p className="text-3xl font-bold mt-1">
+      <p className="text-xs sm:text-sm font-medium opacity-80 leading-tight">{title}</p>
+      <p className="text-2xl sm:text-3xl font-bold mt-1">
         {typeof value === "number" ? value.toLocaleString() : value}
       </p>
       {subtitle && (
-        <p className="text-xs mt-1 opacity-60">{subtitle}</p>
+        <p className="text-xs mt-1 opacity-60 leading-tight">{subtitle}</p>
       )}
     </div>
   );

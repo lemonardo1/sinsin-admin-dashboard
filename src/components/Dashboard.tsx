@@ -146,39 +146,41 @@ export default function Dashboard({ onLogout }: { onLogout: () => void }) {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold text-gray-900">
-              신신당부 관리자 대시보드
-            </h1>
-            <p className="text-xs text-gray-500 mt-0.5">
-              Sinsin Admin Dashboard
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <select
-              value={days}
-              onChange={(e) => setDays(Number(e.target.value))}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-700"
-            >
-              <option value={7}>최근 7일</option>
-              <option value={14}>최근 14일</option>
-              <option value={30}>최근 30일</option>
-              <option value={60}>최근 60일</option>
-              <option value={90}>최근 90일</option>
-            </select>
-            <button
-              onClick={fetchStats}
-              className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition"
-            >
-              새로고침
-            </button>
-            <button
-              onClick={handleLogout}
-              className="px-3 py-2 text-gray-500 text-sm hover:text-red-600 transition"
-            >
-              로그아웃
-            </button>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+            <div>
+              <h1 className="text-base sm:text-xl font-bold text-gray-900 leading-tight">
+                신신당부 관리자 대시보드
+              </h1>
+              <p className="text-xs text-gray-500 mt-0.5 hidden sm:block">
+                Sinsin Admin Dashboard
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <select
+                value={days}
+                onChange={(e) => setDays(Number(e.target.value))}
+                className="flex-1 sm:flex-none px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-700 min-w-0"
+              >
+                <option value={7}>최근 7일</option>
+                <option value={14}>최근 14일</option>
+                <option value={30}>최근 30일</option>
+                <option value={60}>최근 60일</option>
+                <option value={90}>최근 90일</option>
+              </select>
+              <button
+                onClick={fetchStats}
+                className="px-2 sm:px-3 py-1.5 sm:py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition whitespace-nowrap"
+              >
+                새로고침
+              </button>
+              <button
+                onClick={handleLogout}
+                className="px-2 sm:px-3 py-1.5 sm:py-2 text-gray-500 text-sm hover:text-red-600 transition whitespace-nowrap"
+              >
+                로그아웃
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -323,30 +325,32 @@ export default function Dashboard({ onLogout }: { onLogout: () => void }) {
             <h3 className="text-sm font-semibold text-gray-700 mb-4">
               식단 기록 Top 10 유저
             </h3>
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-gray-500 border-b">
-                  <th className="pb-2 font-medium">#</th>
-                  <th className="pb-2 font-medium">닉네임</th>
-                  <th className="pb-2 font-medium">이메일</th>
-                  <th className="pb-2 font-medium text-right">기록 수</th>
-                </tr>
-              </thead>
-              <tbody>
-                {stats.topUsersByDiet.map((user, i) => (
-                  <tr key={i} className="border-b border-gray-50">
-                    <td className="py-2 text-gray-400">{i + 1}</td>
-                    <td className="py-2 text-gray-800 font-medium">
-                      {user.nick_name}
-                    </td>
-                    <td className="py-2 text-gray-500">{user.email}</td>
-                    <td className="py-2 text-right font-semibold text-orange-600">
-                      {Number(user.record_count).toLocaleString()}
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-gray-500 border-b">
+                    <th className="pb-2 font-medium">#</th>
+                    <th className="pb-2 font-medium">닉네임</th>
+                    <th className="pb-2 font-medium">이메일</th>
+                    <th className="pb-2 font-medium text-right whitespace-nowrap">기록 수</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {stats.topUsersByDiet.map((user, i) => (
+                    <tr key={i} className="border-b border-gray-50">
+                      <td className="py-2 text-gray-400">{i + 1}</td>
+                      <td className="py-2 text-gray-800 font-medium whitespace-nowrap">
+                        {user.nick_name}
+                      </td>
+                      <td className="py-2 text-gray-500">{user.email}</td>
+                      <td className="py-2 text-right font-semibold text-orange-600 whitespace-nowrap">
+                        {Number(user.record_count).toLocaleString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {/* Recent Withdrawals */}
@@ -359,33 +363,35 @@ export default function Dashboard({ onLogout }: { onLogout: () => void }) {
                 최근 {days}일 내 탈퇴 기록이 없습니다.
               </p>
             ) : (
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-left text-gray-500 border-b">
-                    <th className="pb-2 font-medium">날짜</th>
-                    <th className="pb-2 font-medium text-right">인원</th>
-                    <th className="pb-2 font-medium">사유</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {stats.recentWithdrawals.map((w, i) => (
-                    <tr key={i} className="border-b border-gray-50">
-                      <td className="py-2 text-gray-600">
-                        {new Date(w.date).toLocaleDateString("ko-KR")}
-                      </td>
-                      <td className="py-2 text-right font-semibold text-red-600">
-                        {Number(w.count)}
-                      </td>
-                      <td className="py-2 text-gray-500 text-xs">
-                        {w.reasons
-                          ?.filter(Boolean)
-                          .slice(0, 3)
-                          .join(", ") || "-"}
-                      </td>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-left text-gray-500 border-b">
+                      <th className="pb-2 font-medium whitespace-nowrap">날짜</th>
+                      <th className="pb-2 font-medium text-right whitespace-nowrap">인원</th>
+                      <th className="pb-2 font-medium">사유</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {stats.recentWithdrawals.map((w, i) => (
+                      <tr key={i} className="border-b border-gray-50">
+                        <td className="py-2 text-gray-600 whitespace-nowrap">
+                          {new Date(w.date).toLocaleDateString("ko-KR")}
+                        </td>
+                        <td className="py-2 text-right font-semibold text-red-600">
+                          {Number(w.count)}
+                        </td>
+                        <td className="py-2 text-gray-500 text-xs">
+                          {w.reasons
+                            ?.filter(Boolean)
+                            .slice(0, 3)
+                            .join(", ") || "-"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
         </div>
